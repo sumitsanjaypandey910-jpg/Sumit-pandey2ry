@@ -1,0 +1,6 @@
+{
+  "name": "Phone Number Memory",
+  "description": "A brain-training working memory game where players memorize and recall contact phone numbers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
