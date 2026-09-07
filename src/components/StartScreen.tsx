@@ -127,7 +127,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
           </div>
         </div>
 
-        {/* Difficulty Banner (Exact match to screenshot 1) */}
+        {/* Difficulty Banner */}
         <div className="w-full mb-6">
           <p className="text-[10px] font-bold tracking-widest text-teal-200/75 uppercase mb-1.5">
             DIFFICULTY
@@ -142,7 +142,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
             {/* Description text */}
             <div className="px-4 py-3 flex-1">
               <p className="text-sm font-medium text-teal-100 leading-snug">
-                Complete all rounds with no mistakes to level up
+                Starts with 3 numbers • Endless run with gradual level scaling
               </p>
             </div>
           </div>

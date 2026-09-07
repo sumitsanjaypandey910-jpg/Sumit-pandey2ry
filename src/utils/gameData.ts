@@ -21,46 +21,76 @@ export const CONTACT_POOL: Contact[] = [
 export const DIFFICULTY_CONFIGS: Record<number, DifficultyConfig> = {
   1: {
     level: 1,
-    digitCount: 5,
-    memorizeSeconds: 3.5,
-    description: 'Complete all rounds with no mistakes to level up',
+    digitCount: 3,
+    memorizeSeconds: 4.0,
+    roundsToLevelUp: 3,
+    description: 'Level 1 • 3 digits • Get 3 correct to level up',
   },
   2: {
     level: 2,
-    digitCount: 6,
-    memorizeSeconds: 3.5,
-    description: 'Complete all rounds with no mistakes to level up',
+    digitCount: 4,
+    memorizeSeconds: 3.8,
+    roundsToLevelUp: 3,
+    description: 'Level 2 • 4 digits • Get 3 correct to level up',
   },
   3: {
     level: 3,
-    digitCount: 7,
-    memorizeSeconds: 3.2,
-    description: 'Complete all rounds with no mistakes to level up',
+    digitCount: 5,
+    memorizeSeconds: 3.5,
+    roundsToLevelUp: 3,
+    description: 'Level 3 • 5 digits • Get 3 correct to level up',
   },
   4: {
     level: 4,
-    digitCount: 8,
-    memorizeSeconds: 3.0,
-    description: 'Complete all rounds with no mistakes to level up',
+    digitCount: 6,
+    memorizeSeconds: 3.3,
+    roundsToLevelUp: 3,
+    description: 'Level 4 • 6 digits • Get 3 correct to level up',
   },
   5: {
     level: 5,
-    digitCount: 9,
-    memorizeSeconds: 2.8,
-    description: 'Complete all rounds with no mistakes to level up',
+    digitCount: 7,
+    memorizeSeconds: 3.0,
+    roundsToLevelUp: 3,
+    description: 'Level 5 • 7 digits • Get 3 correct to level up',
   },
   6: {
     level: 6,
+    digitCount: 8,
+    memorizeSeconds: 2.8,
+    roundsToLevelUp: 3,
+    description: 'Level 6 • 8 digits • Get 3 correct to level up',
+  },
+  7: {
+    level: 7,
+    digitCount: 9,
+    memorizeSeconds: 2.6,
+    roundsToLevelUp: 3,
+    description: 'Level 7 • 9 digits • Get 3 correct to level up',
+  },
+  8: {
+    level: 8,
     digitCount: 10,
     memorizeSeconds: 2.5,
-    description: 'Master difficulty with maximum 10 digits',
+    roundsToLevelUp: 4,
+    description: 'Level 8 • 10 digits • Master endless challenge',
   },
 };
 
 export function getDifficultyConfig(level: number): DifficultyConfig {
   if (level < 1) return DIFFICULTY_CONFIGS[1];
-  if (level > 6) return DIFFICULTY_CONFIGS[6];
-  return DIFFICULTY_CONFIGS[level] || DIFFICULTY_CONFIGS[1];
+  if (DIFFICULTY_CONFIGS[level]) return DIFFICULTY_CONFIGS[level];
+
+  // Endless scaling past level 8
+  const digitCount = Math.min(12, 10 + Math.floor((level - 8) / 2));
+  const memorizeSeconds = Math.max(2.0, 2.5 - (level - 8) * 0.1);
+  return {
+    level,
+    digitCount,
+    memorizeSeconds,
+    roundsToLevelUp: 4,
+    description: `Level ${level} • ${digitCount} digits • Endless challenge`,
+  };
 }
 
 export function generatePhoneNumber(digitCount: number): string {
@@ -102,6 +132,8 @@ export function loadGameStats(): GameStats {
       return {
         bestScore: parsed.bestScore ?? 985, // seeded with 985 as seen in screenshot
         currentDifficulty: parsed.currentDifficulty ?? 1,
+        maxLevel: parsed.maxLevel ?? parsed.currentDifficulty ?? 1,
+        bestStreak: parsed.bestStreak ?? 4,
         rank: parsed.rank ?? 'Amateur',
         gamesPlayed: parsed.gamesPlayed ?? 1,
         totalCorrectRounds: parsed.totalCorrectRounds ?? 4,
@@ -114,6 +146,8 @@ export function loadGameStats(): GameStats {
   return {
     bestScore: 985,
     currentDifficulty: 1,
+    maxLevel: 1,
+    bestStreak: 4,
     rank: 'Amateur',
     gamesPlayed: 1,
     totalCorrectRounds: 4,

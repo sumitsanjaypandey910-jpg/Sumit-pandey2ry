@@ -83,9 +83,9 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
               <Award className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">4. Leveling Up</h3>
+              <h3 className="text-sm font-bold text-white">4. Endless Progression</h3>
               <p className="text-xs text-teal-200/80 leading-relaxed">
-                Complete all 5 rounds without any mistakes to unlock the next difficulty level with more digits!
+                Start with 3 numbers first. Consistent correct recalls slowly increase levels and number of digits in an endless memory run!
               </p>
             </div>
           </div>

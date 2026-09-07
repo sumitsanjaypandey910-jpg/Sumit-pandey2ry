@@ -7,10 +7,10 @@ interface ResultsScreenProps {
   stats: GameStats;
   rounds: RoundData[];
   finalScore: number;
+  maxLevel: number;
+  maxDigits: number;
+  bestStreak: number;
   isNewBest: boolean;
-  leveledUp: boolean;
-  previousLevel: number;
-  newLevel: number;
   onPlayAgain: () => void;
   onGoHome: () => void;
 }
@@ -19,10 +19,10 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   stats,
   rounds,
   finalScore,
+  maxLevel,
+  maxDigits,
+  bestStreak,
   isNewBest,
-  leveledUp,
-  previousLevel,
-  newLevel,
   onPlayAgain,
   onGoHome,
 }) => {
@@ -34,7 +34,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
       {/* Top Header */}
       <div className="text-center pt-2">
         <p className="text-xs font-bold tracking-widest text-teal-200/80 uppercase mb-1">
-          TRAINING COMPLETE
+          ENDLESS RUN COMPLETE
         </p>
         <h1 className="text-3xl font-extrabold text-white tracking-tight">
           Session Summary
@@ -59,51 +59,56 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             {finalScore}
           </p>
 
-          <div className="grid grid-cols-2 gap-3 w-full mt-4 pt-4 border-t border-teal-800/40">
+          <div className="grid grid-cols-3 gap-2 w-full mt-4 pt-4 border-t border-teal-800/40">
             <div className="text-center">
-              <p className="text-[11px] font-semibold text-teal-200/60 uppercase">
-                ACCURACY
+              <p className="text-[10px] font-semibold text-teal-200/60 uppercase">
+                MAX LEVEL
               </p>
-              <p className="text-xl font-bold text-white">
-                {correctCount}/{rounds.length} ({accuracyPercent}%)
+              <p className="text-lg font-bold text-amber-300">
+                Lvl {maxLevel}
               </p>
+              <p className="text-[10px] text-teal-300/60">{maxDigits} Digits</p>
+            </div>
+            <div className="text-center border-x border-teal-800/40">
+              <p className="text-[10px] font-semibold text-teal-200/60 uppercase">
+                BEST STREAK
+              </p>
+              <p className="text-lg font-bold text-white">
+                🔥 {bestStreak}
+              </p>
+              <p className="text-[10px] text-teal-300/60">in a row</p>
             </div>
             <div className="text-center">
-              <p className="text-[11px] font-semibold text-teal-200/60 uppercase">
-                RANK
+              <p className="text-[10px] font-semibold text-teal-200/60 uppercase">
+                ACCURACY
               </p>
-              <p className="text-xl font-bold text-teal-200">
-                {stats.rank}
+              <p className="text-lg font-bold text-teal-200">
+                {accuracyPercent}%
+              </p>
+              <p className="text-[10px] text-teal-300/60">{correctCount}/{rounds.length}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Level Progression Highlight */}
+        <div className="bg-gradient-to-r from-teal-950/80 to-[#02333b]/80 border border-teal-600/30 rounded-2xl p-3.5 flex items-center justify-between shadow-md">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-teal-800/50 flex items-center justify-center text-teal-200">
+              <ArrowUpCircle className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-white">
+                Rounds Survived: {rounds.length}
+              </p>
+              <p className="text-[11px] text-teal-200/75">
+                Started with 3 numbers, scaled up to {maxDigits} digits
               </p>
             </div>
           </div>
         </div>
 
-        {/* Level Up Announcement Banner */}
-        {leveledUp ? (
-          <div className="bg-gradient-to-r from-emerald-950/80 to-teal-900/80 border border-emerald-500/40 rounded-2xl p-4 flex items-center space-x-3.5 shadow-lg">
-            <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 text-emerald-300">
-              <ArrowUpCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-emerald-200">
-                Difficulty Level Up!
-              </h3>
-              <p className="text-xs text-emerald-100/80">
-                Perfect score! Advanced from Level {previousLevel} to Level {newLevel}.
-              </p>
-            </div>
-          </div>
-        ) : correctCount < rounds.length ? (
-          <div className="bg-[#02333b]/60 border border-teal-800/30 rounded-2xl p-3 text-center">
-            <p className="text-xs text-teal-200/80">
-              Complete all rounds without mistakes to reach the next difficulty level.
-            </p>
-          </div>
-        ) : null}
-
         {/* Round by Round Breakdown */}
-        <div className="bg-[#01353e]/60 border border-teal-700/30 rounded-2xl p-3.5 max-h-44 overflow-y-auto space-y-2">
+        <div className="bg-[#01353e]/60 border border-teal-700/30 rounded-2xl p-3.5 max-h-40 overflow-y-auto space-y-2">
           <p className="text-[10px] font-bold tracking-wider text-teal-200/70 uppercase mb-2">
             ROUND BREAKDOWN
           </p>
@@ -120,14 +125,14 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                 )}
                 <div>
                   <span className="font-semibold text-white">
-                    {round.contact.name}
+                    R{round.roundNumber}: {round.contact.name}
                   </span>
-                  <span className="text-teal-300/60 ml-1.5 hidden sm:inline">
-                    ({round.contact.role})
+                  <span className="text-teal-400/70 text-[11px] ml-1">
+                    ({round.digitCount} digits)
                   </span>
                 </div>
               </div>
-              <div className="flex items-center space-x-3 font-mono">
+              <div className="flex items-center space-x-2 font-mono">
                 <span className="text-teal-200 tracking-wider">
                   {round.phoneNumber}
                 </span>

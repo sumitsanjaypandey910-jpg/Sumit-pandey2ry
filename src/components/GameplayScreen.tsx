@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { HelpCircle, Pause, Delete, User, Check, X } from 'lucide-react';
-import { Contact, GamePhase } from '../types';
+import { HelpCircle, Pause, Delete, User, Check, X, Heart } from 'lucide-react';
+import { Contact } from '../types';
 import { soundManager } from '../utils/audio';
 
 interface GameplayScreenProps {
   currentRound: number;
-  totalRounds: number;
   score: number;
   contact: Contact;
   phoneNumber: string;
+  level: number;
+  levelRoundsCompleted: number;
+  levelRoundsNeeded: number;
+  lives: number;
+  maxLives: number;
+  streak: number;
+  levelUpToast: string | null;
   memorizeDurationSeconds: number;
   onRoundComplete: (userAnswer: string, isCorrect: boolean, timeTakenMs: number) => void;
   onPause: () => void;
@@ -17,10 +23,16 @@ interface GameplayScreenProps {
 
 export const GameplayScreen: React.FC<GameplayScreenProps> = ({
   currentRound,
-  totalRounds,
   score,
   contact,
   phoneNumber,
+  level,
+  levelRoundsCompleted,
+  levelRoundsNeeded,
+  lives,
+  maxLives,
+  streak,
+  levelUpToast,
   memorizeDurationSeconds,
   onRoundComplete,
   onPause,
@@ -138,8 +150,8 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
 
   return (
     <div className="relative z-10 flex flex-col justify-between min-h-full max-w-md mx-auto px-4 py-4 text-white select-none">
-      {/* Top Header Bar (matches Screenshot 2: ||   4/5  610   ?) */}
-      <div className="flex items-center justify-between w-full mb-3">
+      {/* Top Header Bar */}
+      <div className="flex items-center justify-between w-full mb-2">
         {/* Pause Button */}
         <button
           id="pause-button"
@@ -154,10 +166,10 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
           <Pause className="w-5 h-5 fill-current" />
         </button>
 
-        {/* Center Progress Pill: 4/5    610 */}
+        {/* Center Progress Pill: Round X   Score */}
         <div className="flex items-center justify-between px-6 py-2 rounded-full bg-[#032930]/90 border border-teal-800/40 w-52 shadow-inner">
           <span className="text-base font-bold text-teal-100 tracking-wider">
-            {currentRound}/{totalRounds}
+            Round {currentRound}
           </span>
           <span className="text-base font-extrabold text-white tracking-wider">
             {score}
@@ -179,8 +191,60 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
         </button>
       </div>
 
+      {/* Endless HUD Status Row: Lives, Level Progress, Streak */}
+      <div className="flex items-center justify-between w-full px-1 mb-2">
+        {/* Lives / Hearts */}
+        <div className="flex items-center space-x-1.5 bg-[#002830]/80 px-2.5 py-1 rounded-full border border-teal-800/40">
+          {Array.from({ length: maxLives }).map((_, i) => (
+            <Heart
+              key={i}
+              className={`w-3.5 h-3.5 transition-all duration-300 ${
+                i < lives
+                  ? 'fill-rose-500 text-rose-500 drop-shadow-[0_0_5px_rgba(244,63,94,0.6)] scale-100'
+                  : 'fill-transparent text-teal-800/60 scale-75'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Level & Digits Indicator */}
+        <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#002830]/80 border border-teal-800/40 text-[11px] font-semibold text-teal-200 shadow-xs">
+          <span className="font-bold text-white">Lvl {level}</span>
+          <span className="text-teal-500">•</span>
+          <span className="text-amber-300 font-bold">{digitCount} Digits</span>
+          <span className="text-teal-400 text-[10px]">
+            ({levelRoundsCompleted}/{levelRoundsNeeded})
+          </span>
+        </div>
+
+        {/* Streak Counter */}
+        <div className="min-w-[48px] flex justify-end">
+          {streak >= 2 ? (
+            <div className="flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold animate-pulse">
+              <span>🔥</span>
+              <span>{streak}</span>
+            </div>
+          ) : (
+            <div className="text-[10px] text-teal-400/60 font-semibold px-2 py-0.5">
+              Endless
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Level-Up Celebration Toast */}
+      {levelUpToast && (
+        <div className="w-full flex justify-center mb-1">
+          <div className="bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-[#003842] py-1.5 px-4 rounded-full font-black text-xs tracking-wide shadow-lg border border-amber-200 animate-bounce flex items-center space-x-1.5">
+            <span>✨</span>
+            <span>{levelUpToast}</span>
+            <span>✨</span>
+          </div>
+        </div>
+      )}
+
       {/* Instructional Badge */}
-      <div className="flex justify-center w-full my-2">
+      <div className="flex justify-center w-full my-1.5">
         <div className="px-6 py-1.5 rounded-lg bg-[#002830]/90 border border-teal-800/50 shadow-sm transition-all duration-300">
           <p className="text-sm font-bold text-teal-100 tracking-wide text-center">
             {phase === 'memorize' ? 'Memorize the number' : 'Input the number'}

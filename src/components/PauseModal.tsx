@@ -6,6 +6,7 @@ interface PauseModalProps {
   isOpen: boolean;
   onResume: () => void;
   onRestart: () => void;
+  onFinishSession?: () => void;
   onQuit: () => void;
   isMuted: boolean;
   onToggleMute: () => void;
@@ -15,6 +16,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
   isOpen,
   onResume,
   onRestart,
+  onFinishSession,
   onQuit,
   isMuted,
   onToggleMute,
@@ -46,6 +48,19 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             <span>Resume</span>
           </button>
 
+          {onFinishSession && (
+            <button
+              id="pause-finish-btn"
+              onClick={() => {
+                soundManager.playClick();
+                onFinishSession();
+              }}
+              className="w-full py-3 rounded-full bg-emerald-700/80 hover:bg-emerald-600 text-white font-semibold text-sm transition-all border border-emerald-500/40 flex items-center justify-center space-x-2 cursor-pointer"
+            >
+              <span>Finish & View Stats</span>
+            </button>
+          )}
+
           <button
             id="pause-restart-btn"
             onClick={() => {
@@ -55,7 +70,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             className="w-full py-3 rounded-full bg-[#02434f] hover:bg-[#045665] text-white font-semibold text-sm transition-all border border-teal-700/40 flex items-center justify-center space-x-2 cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
-            <span>Restart Session</span>
+            <span>Restart Run</span>
           </button>
 
           <button
